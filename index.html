@@ -29,6 +29,8 @@ summary{padding:10px 0;cursor:pointer}
 .bar{height:6px;border-radius:3px;background:var(--bd);margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
 .ep button{padding:5px 9px;font-size:13px;flex:none}.lb{display:flex;gap:12px;align-items:center;flex:1;min-width:0}
 .er{color:#c0392b}
+.hd{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px}.hd img,.hd .ph{width:110px;height:165px;border-radius:10px;object-fit:cover;flex:none}
+.ac2{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}
 .ch{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.ch button{padding:6px 12px;font-size:14px;border-radius:99px}.ch button.on{background:var(--ac);border-color:var(--ac);color:var(--bg);font-weight:600}
 </style></head><body>
 <main id="app"></main><nav id="nav"></nav>
@@ -37,7 +39,7 @@ const $=s=>document.querySelector(s);
 const LS=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){err='Stockage impossible'}};
 let D=LS('data')||{shows:{}},C=LS('cache')||{},K=LS('key')||'';
-let tab='todo',open=null,os=null,res=[],q='',busy='',err='',ty='all',st='all',so='recent';
+let tab='todo',open=null,os=null,res=[],q='',busy='',err='',ty='all',st='all',so='recent',qs='';
 const pad=n=>String(n).padStart(2,'0');
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -48,12 +50,12 @@ const api=async(p,x={})=>{const u=new URL('https://api.themoviedb.org/3'+p);cons
  u.search=new URLSearchParams({language:'fr-FR',...x});
  if(K.length>40)o.headers={Authorization:'Bearer '+K};else u.searchParams.set('api_key',K);
  const r=await fetch(u,o);if(!r.ok)throw new Error(r.status==401?'Clé API invalide':'Erreur TMDB '+r.status);return r.json()};
-async function refresh(id,force){const c=C[id];if(!force&&c&&D.shows[id]?.kind&&Date.now()-c.t<432e5)return;
+async function refresh(id,force){const c=C[id];if(!force&&c&&D.shows[id]?.kind&&'overview'in D.shows[id]&&Date.now()-c.t<432e5)return;
  const d=await api('/tv/'+id),eps=[];
  await Promise.all(d.seasons.filter(s=>s.season_number>0).map(async s=>{const r=await api(`/tv/${id}/season/${s.season_number}`);
   r.episodes.forEach(e=>eps.push([s.season_number,e.episode_number,e.name||'',e.air_date||'']))}));
  eps.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);C[id]={t:Date.now(),eps};
- if(D.shows[id]){D.shows[id].name=d.name;D.shows[id].poster=d.poster_path;D.shows[id].kind=d.original_language=='ja'&&(d.genres||[]).some(g=>g.id==16)?'anime':'serie'}
+ if(D.shows[id]){D.shows[id].name=d.name;D.shows[id].poster=d.poster_path;D.shows[id].overview=d.overview||'';D.shows[id].kind=d.original_language=='ja'&&(d.genres||[]).some(g=>g.id==16)?'anime':'serie'}
  save('cache',C);save('data',D)}
 async function refreshAll(force){if(!K)return;busy='Mise à jour des dates…';err='';render();
  for(const id of Object.keys(D.shows)){try{await refresh(id,force)}catch(e){err=e.message}}
@@ -74,20 +76,24 @@ function vCal(){const T=today();let L=[];
  const diff=d=>Math.round((new Date(d+'T12:00')-new Date(T+'T12:00'))/864e5);
  return '<h2>Prochaines sorties</h2>'+chips('ty',TY,ty)+(L.slice(0,60).map(([d,id,x])=>{const n=diff(d);
   return `<div class="c" data-open="${id}">${img(D.shows[id].poster)}<div class="t"><b>${esc(D.shows[id].name)}</b><span class="m">${fmt(x[0],x[1])} ${esc(x[2])}</span></div><span class="m">${n==0?"Aujourd'hui":n==1?'Demain':fd(d)}</span></div>`}).join('')||'<p class="m">Aucune sortie annoncée pour tes séries.</p>')}
-function vList(){
+const nz=t=>String(t).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+function listHtml(){
  let L=Object.keys(D.shows).filter(vis).map(id=>({id,s:D.shows[id],pr:prog(id)}));
  const F={all:()=>1,run:x=>!x.s.dropped&&x.pr[0]>0&&x.pr[0]<x.pr[1],new:x=>!x.s.dropped&&x.pr[0]==0,done:x=>!x.s.dropped&&x.pr[1]>0&&x.pr[0]==x.pr[1],drop:x=>x.s.dropped};
- L=L.filter(F[st]);
+ L=L.filter(F[st]).filter(x=>nz(x.s.name).includes(nz(qs)));
  L.sort(so=='title'?(a,b)=>a.s.name.localeCompare(b.s.name,'fr'):so=='prog'?(a,b)=>b.pr[2]-a.pr[2]:(a,b)=>(b.s.added||0)-(a.s.added||0));
- return '<h2>Mes séries</h2>'+chips('ty',TY,ty)+chips('st',[['all','Toutes'],['run','En cours'],['new','Pas commencées'],['done','Complètes'],['drop','Abandonnées']],st)+chips('so',[['recent','Ajout récent'],['title','A à Z'],['prog','Progression']],so)+
-  (L.map(({id,s,pr:[v,n,p]})=>`<div class="c" data-open="${id}">${img(s.poster)}<div class="t"><b>${esc(s.name)}</b><span class="m">${v} sur ${n} épisodes vus (${p} %)</span>${s.dropped?'<br><span class="m">Abandonnée</span>':''}${bar(p)}</div></div>`).join('')||'<p class="m">Aucune série ici.</p>')}
-function vDetail(id){const s=D.shows[id],T=today(),eps=C[id]?.eps||[],by={};
+ return L.map(({id,s,pr:[v,n,p]})=>`<div class="c" data-open="${id}">${img(s.poster)}<div class="t"><b>${esc(s.name)}</b><span class="m">${v} sur ${n} épisodes vus (${p} %)</span>${s.dropped?'<br><span class="m">Abandonnée</span>':''}${bar(p)}</div></div>`).join('')||'<p class="m">Aucune série ici.</p>'}
+function vList(){
+ return '<h2>Mes séries</h2><input type="search" id="qs" placeholder="Rechercher dans mes séries" value="'+esc(qs)+'">'+chips('ty',TY,ty)+chips('st',[['all','Toutes'],['run','En cours'],['new','Pas commencées'],['done','Complètes'],['drop','Abandonnées']],st)+chips('so',[['recent','Ajout récent'],['title','A à Z'],['prog','Progression']],so)+'<div id="sl">'+listHtml()+'</div>'}
+function vDetail(id){const s=D.shows[id],T=today(),eps=C[id]?.eps||[],by={},[v,tot,p]=prog(id);
  eps.forEach(x=>(by[x[0]]??=[]).push(x));
  if(os==null){const f=eps.find(x=>x[3]&&x[3]<=T&&!s.seen[x[0]+'-'+x[1]]);os=f?f[0]:+Object.keys(by).pop()}
- let h=`<button data-back>Retour</button><h2>${esc(s.name)}</h2>${(()=>{const[v,n,p]=prog(id);return `<p class="m">${v} sur ${n} épisodes vus (${p} %)</p>${bar(p)}<br>`})()}`;
+ let h=`<p><button data-back>Retour</button></p><div class="hd">${s.poster?`<img src="https://image.tmdb.org/t/p/w185${s.poster}" alt="">`:'<div class="ph"></div>'}<div class="t"><h2 style="margin-top:0">${esc(s.name)}</h2><span class="m">${s.kind=='anime'?'Anime':'Série'}${s.dropped?', abandonnée':''}</span><p class="m">${v} sur ${tot} épisodes vus (${p} %)</p>${bar(p)}</div></div>`+
+  (s.overview?`<p>${esc(s.overview)}</p>`:'')+
+  `<div class="ac2"><button data-drop="${id}">${s.dropped?'Reprendre le suivi':'Drop (abandonner)'}</button><button data-kind="${id}">Classer comme ${s.kind=='anime'?'série':'anime'}</button><button data-del="${id}">Ne plus suivre</button></div><h2>Saisons</h2>`;
  for(const n in by)h+=`<details${n==os?' open':''}><summary><b>Saison ${n}</b></summary><p><button data-all="${id}|${n}">Tout marquer comme vu</button></p>`+
   by[n].map(x=>{const k=x[0]+'-'+x[1],ok=x[3]&&x[3]<=T;return `<div class="ep${ok?'':' fut'}"><label class="lb"><input type="checkbox" data-ep="${id}|${x[0]}|${x[1]}"${s.seen[k]?' checked':''}><span class="t">${x[1]}. ${esc(x[2])}<br><span class="m">${x[3]?fd(x[3]):'Date inconnue'}</span></span></label>${ok?`<button data-upto="${id}|${x[0]}|${x[1]}">Vu jusqu'ici</button>`:''}</div>`}).join('')+'</details>';
- return h+`<p><button data-drop="${id}">${s.dropped?'Reprendre le suivi':'Drop (abandonner)'}</button> <button data-kind="${id}">Classer comme ${s.kind=='anime'?'série':'anime'}</button></p><p><button data-del="${id}">Ne plus suivre</button></p>`}
+ return h}
 function vAdd(){return `<h2>Ajouter une série</h2><input type="search" id="q" placeholder="Titre, puis Entrée" value="${esc(q)}"><div style="margin-top:12px">`+
  res.map(r=>`<div class="c">${img(r.poster_path)}<div class="t"><b>${esc(r.name)}</b><span class="m">${(r.first_air_date||'').slice(0,4)}</span></div>${D.shows[r.id]?'<span class="m">Suivie</span>':`<button class="p" data-add="${r.id}">Suivre</button>`}</div>`).join('')+'</div>'}
 function vSet(){return `<h2>Clé API TMDB</h2><p class="m">Crée un compte gratuit sur themoviedb.org, puis Paramètres, API. Colle ici la clé (v3) ou le jeton.</p><input id="key" value="${esc(K)}" placeholder="Clé API"><p><button class="p" data-savekey>Enregistrer</button></p>
@@ -125,6 +131,7 @@ document.addEventListener('change',async e=>{if(e.target.id!='f')return;const f=
  try{const j=JSON.parse(await f.text());if(!j.shows)throw 0;
   for(const id in j.shows){const n=j.shows[id],o=D.shows[id];if(o)Object.assign(o.seen,n.seen);else D.shows[id]={name:n.name||'',poster:n.poster||null,seen:n.seen||{},kind:n.kind,added:n.added||Date.now(),dropped:n.dropped}}
   save('data',D);err='';await refreshAll(true)}catch(x){err='Fichier invalide'}render()});
+document.addEventListener('input',e=>{if(e.target.id=='qs'){qs=e.target.value;$('#sl').innerHTML=listHtml()}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshAll(false)});
 navigator.storage?.persist?.();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');

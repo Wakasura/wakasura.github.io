@@ -4,36 +4,49 @@
 <title>Mes séries</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg">
-<meta name="theme-color" content="#0e7c86">
+<meta name="theme-color" content="#0f766e">
 <style>
-:root{--bg:#f4f6f8;--fg:#1b2430;--mu:#5d6b7a;--card:#fff;--ac:#0e7c86;--bd:#dde3ea}
-@media(prefers-color-scheme:dark){:root{--bg:#121a22;--fg:#e8eef4;--mu:#8fa0b1;--card:#1a242e;--ac:#4fd1c5;--bd:#2a3744}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,sans-serif;padding:env(safe-area-inset-top) 0 calc(70px + env(safe-area-inset-bottom))}
-main{max-width:640px;margin:auto;padding:12px}
-h2{font-size:20px;margin:18px 0 10px}
-.c{display:flex;gap:12px;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:8px;margin-bottom:8px;align-items:center}
-.c img,.ph{width:46px;height:69px;border-radius:6px;object-fit:cover;background:var(--bd);flex:none}
-.t{flex:1;min-width:0}.t b{display:block}.m{color:var(--mu);font-size:14px}
-button,input{font:inherit;border-radius:8px;border:1px solid var(--bd);padding:9px 14px;background:var(--card);color:var(--fg)}
-button.p{background:var(--ac);border-color:var(--ac);color:var(--bg);font-weight:600}
-input[type=search],input#key{width:100%}
-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;border:0;border-radius:0;background:none;padding:15px 2px;font-size:14px;color:var(--mu)}
+:root{--bg:#f6f7f9;--fg:#0f172a;--mu:#64748b;--card:#fff;--ac:#0f766e;--on:#fff;--bd:#e2e8f0;--sh:0 1px 2px rgba(15,23,42,.06),0 2px 8px rgba(15,23,42,.04)}
+@media(prefers-color-scheme:dark){:root{--bg:#0b1016;--fg:#e6edf5;--mu:#8b9bb0;--card:#141b24;--ac:#2dd4bf;--on:#04201d;--bd:#1f2a37;--sh:none}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);font-weight:700;font-size:18px;letter-spacing:-.01em}
+header svg{width:28px;height:28px;flex:none}
+main{max-width:680px;margin:auto;padding:4px 16px}
+h2{font-size:24px;font-weight:700;letter-spacing:-.02em;margin:20px 0 12px}
+h3{font-size:13px;font-weight:600;color:var(--mu);margin:20px 0 8px;letter-spacing:.02em}
+h3::first-letter{text-transform:uppercase}
+.c{display:flex;gap:14px;background:var(--card);border-radius:14px;padding:10px;margin-bottom:10px;align-items:center;box-shadow:var(--sh);border:1px solid var(--bd)}
+.c img,.ph{width:56px;height:84px;border-radius:8px;object-fit:cover;background:var(--bd);flex:none}
+.t{flex:1;min-width:0}.t b{display:block;font-weight:600}.m{color:var(--mu);font-size:14px}
+.tag{display:inline-block;background:color-mix(in srgb,var(--ac) 16%,transparent);color:var(--ac);font-weight:700;font-size:12px;padding:2px 8px;border-radius:99px;margin:3px 4px 3px 0}
+button,input{font:inherit;border-radius:12px;border:1px solid var(--bd);padding:10px 16px;background:var(--card);color:var(--fg)}
+button{cursor:pointer;font-weight:500}
+button.p{background:var(--ac);border-color:var(--ac);color:var(--on);font-weight:600;border-radius:99px}
+input[type=search],input#key{width:100%;padding:12px 16px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;border-radius:0;background:none;padding:10px 2px 9px;font-size:11px;font-weight:500;color:var(--mu)}
+nav button svg{width:24px;height:24px}
 nav button.on{color:var(--ac);font-weight:700}
-details{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:4px 12px;margin-bottom:8px}
-summary{padding:10px 0;cursor:pointer}
-.ep{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--bd)}
-.ep input{width:22px;height:22px;flex:none}
-.fut{opacity:.55}
-.bar{height:6px;border-radius:3px;background:var(--bd);margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
-.ep button{padding:5px 9px;font-size:13px;flex:none}.lb{display:flex;gap:12px;align-items:center;flex:1;min-width:0}
-.er{color:#c0392b}
-.hd{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px}.hd img,.hd .ph{width:110px;height:165px;border-radius:10px;object-fit:cover;flex:none}
+details{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:4px 14px;margin-bottom:10px;box-shadow:var(--sh)}
+summary{padding:12px 0;cursor:pointer;font-size:16px}
+.ep{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--bd)}
+.ep input{width:22px;height:22px;flex:none;accent-color:var(--ac)}
+.fut{opacity:.5}
+.er{color:#dc2626}
+.bar{height:5px;border-radius:3px;background:var(--bd);margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac);border-radius:3px}
+.ep button{padding:6px 10px;font-size:13px;flex:none;border-radius:99px}.lb{display:flex;gap:12px;align-items:center;flex:1;min-width:0}
+.ch{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.ch button{padding:6px 14px;font-size:14px;border-radius:99px}.ch button.on{background:var(--ac);border-color:var(--ac);color:var(--on);font-weight:600}
+.hd{display:flex;gap:16px;align-items:flex-start;margin-bottom:12px}.hd img,.hd .ph{width:120px;height:180px;border-radius:12px;object-fit:cover;flex:none;box-shadow:var(--sh)}
+.hd h2{margin-top:0}
 .ac2{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}
-.ch{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.ch button{padding:6px 12px;font-size:14px;border-radius:99px}.ch button.on{background:var(--ac);border-color:var(--ac);color:var(--bg);font-weight:600}
+.g{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 12px;margin-top:12px}
+@media(min-width:560px){.g{grid-template-columns:repeat(4,1fr)}}
+.pc{cursor:pointer;min-width:0}.pc img,.pc .ph{width:100%;height:auto;aspect-ratio:2/3;border-radius:10px;object-fit:cover;display:block;box-shadow:var(--sh)}
+.pc b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13px;font-weight:600;margin-top:2px;line-height:1.25}
+.pc .m{font-size:12px}.pc .bar{margin:6px 0 6px}.dr{opacity:.55}
 </style></head><body>
-<main id="app"></main><nav id="nav"></nav>
+<header><svg viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#0f766e"/><path d="M200 160l170 96-170 96z" fill="#fff"/></svg><span>Mes séries</span></header><main id="app"></main><nav id="nav"></nav>
 <script>
 const $=s=>document.querySelector(s);
 const LS=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
@@ -68,21 +81,23 @@ const chips=(k,o,cur)=>`<div class="ch">`+o.map(([v,l])=>`<button data-f="${k}|$
 function vTodo(){const T=today();let n=0;
  const h=Object.keys(D.shows).filter(id=>vis(id)&&!D.shows[id].dropped).map(id=>{const s=D.shows[id],c=C[id];if(!c)return'';
   const un=c.eps.filter(x=>x[3]&&x[3]<=T&&!s.seen[x[0]+'-'+x[1]]);if(!un.length)return'';n++;const e=un[0];
-  return `<div class="c" data-open="${id}">${img(s.poster)}<div class="t"><b>${esc(s.name)}</b><span class="m">${fmt(e[0],e[1])} ${esc(e[2])}</span>${un.length>1?`<br><span class="m">${un.length-1} autre(s) à rattraper</span>`:''}</div><button class="p" data-seen="${id}|${e[0]}|${e[1]}">Vu</button></div>`}).join('');
+  return `<div class="c" data-open="${id}">${img(s.poster)}<div class="t"><b>${esc(s.name)}</b><span class="tag">${fmt(e[0],e[1])}</span><span class="m">${esc(e[2])}</span>${un.length>1?`<br><span class="m">${un.length-1} autre(s) à rattraper</span>`:''}</div><button class="p" data-seen="${id}|${e[0]}|${e[1]}">Vu</button></div>`}).join('');
  return '<h2>À regarder</h2>'+chips('ty',TY,ty)+(n?h:Object.keys(D.shows).length?'<p class="m">Tu es à jour.</p>':'<p class="m">Aucune série suivie. Va dans Ajouter pour en choisir.</p>')}
 function vCal(){const T=today();let L=[];
  for(const id in D.shows){if(!vis(id)||D.shows[id].dropped)continue;(C[id]?.eps||[]).forEach(x=>{if(x[3]>=T)L.push([x[3],id,x])})}
  L.sort((a,b)=>a[0].localeCompare(b[0])||a[1]-b[1]);
  const diff=d=>Math.round((new Date(d+'T12:00')-new Date(T+'T12:00'))/864e5);
- return '<h2>Prochaines sorties</h2>'+chips('ty',TY,ty)+(L.slice(0,60).map(([d,id,x])=>{const n=diff(d);
-  return `<div class="c" data-open="${id}">${img(D.shows[id].poster)}<div class="t"><b>${esc(D.shows[id].name)}</b><span class="m">${fmt(x[0],x[1])} ${esc(x[2])}</span></div><span class="m">${n==0?"Aujourd'hui":n==1?'Demain':fd(d)}</span></div>`}).join('')||'<p class="m">Aucune sortie annoncée pour tes séries.</p>')}
+ let h='<h2>Prochaines sorties</h2>'+chips('ty',TY,ty),last='';
+ L.slice(0,80).forEach(([d,id,x])=>{if(d!=last){last=d;const n=diff(d);h+=`<h3>${n==0?"Aujourd'hui":n==1?'Demain':fd(d)}</h3>`}
+  h+=`<div class="c" data-open="${id}">${img(D.shows[id].poster)}<div class="t"><b>${esc(D.shows[id].name)}</b><span class="tag">${fmt(x[0],x[1])}</span><span class="m">${esc(x[2])}</span></div></div>`});
+ return h+(L.length?'':'<p class="m">Aucune sortie annoncée pour tes séries.</p>')}
 const nz=t=>String(t).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 function listHtml(){
  let L=Object.keys(D.shows).filter(vis).map(id=>({id,s:D.shows[id],pr:prog(id)}));
  const F={all:()=>1,run:x=>!x.s.dropped&&x.pr[0]>0&&x.pr[0]<x.pr[1],new:x=>!x.s.dropped&&x.pr[0]==0,done:x=>!x.s.dropped&&x.pr[1]>0&&x.pr[0]==x.pr[1],drop:x=>x.s.dropped};
  L=L.filter(F[st]).filter(x=>nz(x.s.name).includes(nz(qs)));
  L.sort(so=='title'?(a,b)=>a.s.name.localeCompare(b.s.name,'fr'):so=='prog'?(a,b)=>b.pr[2]-a.pr[2]:(a,b)=>(b.s.added||0)-(a.s.added||0));
- return L.map(({id,s,pr:[v,n,p]})=>`<div class="c" data-open="${id}">${img(s.poster)}<div class="t"><b>${esc(s.name)}</b><span class="m">${v} sur ${n} épisodes vus (${p} %)</span>${s.dropped?'<br><span class="m">Abandonnée</span>':''}${bar(p)}</div></div>`).join('')||'<p class="m">Aucune série ici.</p>'}
+ return L.length?'<div class="g">'+L.map(({id,s,pr:[v,n,p]})=>`<div class="pc${s.dropped?' dr':''}" data-open="${id}">${s.poster?`<img src="https://image.tmdb.org/t/p/w342${s.poster}" alt="" loading="lazy">`:'<div class="ph"></div>'}${bar(p)}<b>${esc(s.name)}</b><span class="m">${v}/${n} vus${s.dropped?', abandonnée':''}</span></div>`).join('')+'</div>':'<p class="m">Aucune série ici.</p>'}
 function vList(){
  return '<h2>Mes séries</h2><input type="search" id="qs" placeholder="Rechercher dans mes séries" value="'+esc(qs)+'">'+chips('ty',TY,ty)+chips('st',[['all','Toutes'],['run','En cours'],['new','Pas commencées'],['done','Complètes'],['drop','Abandonnées']],st)+chips('so',[['recent','Ajout récent'],['title','A à Z'],['prog','Progression']],so)+'<div id="sl">'+listHtml()+'</div>'}
 function vDetail(id){const s=D.shows[id],T=today(),eps=C[id]?.eps||[],by={},[v,tot,p]=prog(id);
@@ -100,10 +115,11 @@ function vSet(){return `<h2>Clé API TMDB</h2><p class="m">Crée un compte gratu
 <h2>Sauvegarde</h2><p class="m">Dernier export : ${esc(LS('lastexp')||'jamais')}</p><p><button data-exp>Exporter</button> <button data-imp>Importer</button></p><input type="file" id="f" accept=".json" hidden>
 <h2>Données</h2><p><button data-refresh>Actualiser les dates de sortie</button></p>
 <h2>À propos</h2><p class="m">Ce produit utilise l'API TMDB mais n'est ni approuvé ni certifié par <a href="https://www.themoviedb.org" style="color:var(--ac)">TMDB</a>.</p>`}
+const IC={todo:'<path d="M8 5v14l11-7z"/>',cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',list:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',add:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',set:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>'};
 function render(){const y=window.scrollY;
  const body=open?vDetail(open):!K&&tab!='set'?'<h2>Bienvenue</h2><p>Ajoute ta clé TMDB dans Réglages pour commencer.</p>':{todo:vTodo,cal:vCal,list:vList,add:vAdd,set:vSet}[tab]();
  $('#app').innerHTML=(err?`<p class="er">${esc(err)}</p>`:'')+(busy?`<p class="m">${busy}</p>`:'')+body+'<p class="m" style="margin-top:28px;font-size:12px">Données et images fournies par TMDB.</p>';
- $('#nav').innerHTML=[['todo','À voir'],['cal','Sorties'],['list','Séries'],['add','Ajouter'],['set','Réglages']].map(([k,l])=>`<button data-tab="${k}" class="${tab==k&&!open?'on':''}">${l}</button>`).join('');
+ $('#nav').innerHTML=[['todo','À voir'],['cal','Sorties'],['list','Séries'],['add','Ajouter'],['set','Réglages']].map(([k,l])=>`<button data-tab="${k}" class="${tab==k&&!open?'on':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg><span>${l}</span></button>`).join('');
  window.scrollTo(0,y)}
 document.addEventListener('click',async ev=>{
  const t=ev.target.closest('[data-tab],[data-seen],[data-open],[data-back],[data-ep],[data-all],[data-upto],[data-f],[data-drop],[data-kind],[data-add],[data-del],[data-savekey],[data-exp],[data-imp],[data-refresh]');if(!t)return;const d=t.dataset;

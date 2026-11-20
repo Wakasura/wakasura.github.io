@@ -1,4 +1,4 @@
-# Piano Trainer V4.26
+# Piano Trainer V4.27
 
 Ouvrir `index.html` dans le navigateur (Chrome/Edge recommandé pour le MIDI ; internet requis pour les bibliothèques et les sons de piano).
 

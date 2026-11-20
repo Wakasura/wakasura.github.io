@@ -111,7 +111,7 @@ function gFromAlphaTab(score){
     const asc = tun.slice().sort((a,b)=>a-b), n = asc.length, tuning = GS.slice();
     asc.forEach((p,i)=>{ tuning[i] = p; });
     const bars = st.bars.map(bar=>{
-      const mb = bar.masterBar, tsn = mb.timeSignatureNumerator, tsd = mb.timeSignatureDenominator, groups = new Map();
+      const mb = bar.masterBar, tsn = mb.timeSignatureNumerator, tsd = mb.timeSignatureDenominator, len = tsn*16/tsd, groups = new Map();
       bar.voices.forEach(v=>v.beats.forEach(b=>{
         if(b.isEmpty || b.isRest || (b.graceType && b.graceType!==0)) return;
         const ps = []; b.notes.forEach(nt=>{ if(nt.isTieDestination || nt.isDead) return;
@@ -119,10 +119,12 @@ function gFromAlphaTab(score){
           if(typeof nt.realValue==='number'){ const sB = n-nt.string; if(sB>=0 && sB<n && Math.abs(asc[sB]+nt.fret-nt.realValue) < Math.abs(asc[Math.max(0,Math.min(n-1,s))]+nt.fret-nt.realValue)) s = sB; }
           if(s>=0 && s<n) ps.push([s, nt.fret]); });
         if(!ps.length) return;
-        const off = r3((b.playbackStart-mb.start)/240), dur = Math.max(.5, r3(b.playbackDuration/240));
+        let rel = b.playbackStart; const barTicks = tsn*3840/tsd;               // alphaTab : 960 ticks par noire ; le début du temps est relatif à la mesure (ou absolu selon la version)
+        if(mb.start>0 && rel>=barTicks-1) rel -= mb.start;
+        const off = Math.max(0, Math.min(len-.5, r3(rel/240))), dur = Math.max(.5, r3(b.playbackDuration/240));
         const g = groups.get(off) || groups.set(off, {off, dur, pos:[]}).get(off); g.dur = Math.min(g.dur, dur); ps.forEach(p=>{ if(!g.pos.some(q=>q[0]===p[0])) g.pos.push(p); });
       }));
-      return {len:tsn*16/tsd, ts:[tsn,tsd], beats:[...groups.values()].sort((a,b)=>a.off-b.off).map(g=>({...g, pos:g.pos.sort((a,b)=>a[0]-b[0])}))};
+      return {len, ts:[tsn,tsd], beats:[...groups.values()].sort((a,b)=>a.off-b.off).map(g=>({...g, pos:g.pos.sort((a,b)=>a[0]-b[0])}))};
     });
     if(bars.some(b=>b.beats.length)) tracks.push({name:tr.name || 'Piste '+(tracks.length+1), tuning, ts:bars[0]?.ts || [4,4], bars});
   });
